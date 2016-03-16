@@ -48,7 +48,11 @@ public class GameView extends View {
             int top = height - GROUND_HEIGHT;
             ground = new Ground(0, top, width, height);
         }
+        mario.move();
         mario.draw(canvas);
         ground.draw(canvas);
+
+        //再度onDrawを実行
+        invalidate();
     }
 }
