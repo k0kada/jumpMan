@@ -1,4 +1,5 @@
 package kokada.io.jumpman;
+
 //アプリケーションの環境情報とかをグローバル(Android OSの全域）で受け渡しするためのインターフェース
 //アクティビティの起動とかブロードキャスト、インテントの受け取りといった他のアプリからの応答を行え、アンドロイド特有のリソース・クラスにアクセスすることも出来る。
 import android.content.Context;
@@ -8,6 +9,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 //Canvasクラスは、文字、図形等を描画することができます。
 import android.graphics.Canvas;
+//MotionEventは、デバイスの種類に応じて、絶対的または、相対的な移動や その他のデータのいづれかを保持することができます。
+import android.view.MotionEvent;
 //Viewクラスは、ビューの土台となる機能を持っているクラスです。
 import android.view.View;
 
@@ -64,5 +67,42 @@ public class GameView extends View {
 
         //再度onDrawを実行
         invalidate();
+    }
+
+    //ミリ秒
+    private static final long MAX_TOUCH_TIME = 500;
+    //タッチした時刻
+    private long touchDownStartTime;
+
+    /**
+     * タッチ判定
+     */
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                touchDownStartTime = System.currentTimeMillis();
+                return true;
+            case MotionEvent.ACTION_UP:
+                float time = System.currentTimeMillis() - touchDownStartTime;
+                jumpMario(time);
+                touchDownStartTime = 0;
+                break;
+        }
+        return super.onTouchEvent(event);
+    }
+
+    /**
+     * 自機をジャンプさせる
+     * @param time
+     */
+    private void jumpMario(float time) {
+        //地面に着地していなかったら
+        if (marioCallback.getDistanceFromGround(mario) > 0) {
+            return;
+        }
+
+        //タッチしていた時間を計算されせジャンプさせる(タッチ時間によってジャンプ距離が変わる)
+        mario.jump(Math.min(time, MAX_TOUCH_TIME) / MAX_TOUCH_TIME);
     }
 }

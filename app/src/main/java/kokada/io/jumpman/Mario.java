@@ -11,6 +11,9 @@ import android.graphics.Rect;
  * 自機表示クラス
  */
 public class Mario {
+    private static final float GRAVITY = 0.8f;
+    private static final float WEIGHT = GRAVITY * 60;
+
     private final Paint paint = new Paint();
 
     private Bitmap bitmap;
@@ -37,8 +40,23 @@ public class Mario {
         canvas.drawBitmap(bitmap, rect.left, rect.top, paint);
     }
 
+    private float velocity = 0;
+
+    public void jump(float power) {
+        //加速度計算
+        velocity = (power * WEIGHT);
+    }
+
     public void move() {
         int distanceFromGround = callback.getDistanceFromGround(this);
+
+        //地面を下に突き抜けた時
+        if (velocity < 0 && velocity < -distanceFromGround) {
+            velocity = -distanceFromGround;
+        }
+
+        rect.offset(0, Math.round(-1 * velocity));
+
         //地面から激突したら止まる
         if (distanceFromGround == 0) {
             return;
@@ -48,6 +66,6 @@ public class Mario {
         }
 
         //下へ落下
-        rect.offset(0, 5);
+        velocity -= GRAVITY;
     }
 }
