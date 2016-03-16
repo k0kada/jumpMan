@@ -23,6 +23,16 @@ public class GameView extends View {
     private Mario mario;
 
     /**
+     * 自機と地面との距離を計算
+     */
+    private final Mario.Callback marioCallback = new Mario.Callback() {
+        @Override
+        public int getDistanceFromGround(Mario mario) {
+            return ground.rect.top - mario.rect.bottom;
+        }
+    };
+
+    /**
      * viewクラス継承
      * @param context
      */
@@ -30,7 +40,7 @@ public class GameView extends View {
         super(context);
 
         marioBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.mario);
-        mario = new Mario(marioBitmap, 0, 0);
+        mario = new Mario(marioBitmap, 0, 0, marioCallback);
     }
 
     /**
