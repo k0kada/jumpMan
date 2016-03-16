@@ -8,9 +8,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 //Canvasクラスは、文字、図形等を描画することができます。
 import android.graphics.Canvas;
-//Paintオブジェクトは、描画する場合に使用されるペンのようなものです。
-//ペンのように描画する文字や図形の色や線の太さ等を指定することができます。
-import android.graphics.Paint;
 //Viewクラスは、ビューの土台となる機能を持っているクラスです。
 import android.view.View;
 
@@ -18,12 +15,12 @@ import android.view.View;
  * Created by kokada on 16/03/17.
  */
 public class GameView extends View {
-    private static final Paint PAINT = new Paint();
 
     private static final int GROUND_HEIGHT = 50;
     private Ground ground;
 
     private Bitmap marioBitmap;
+    private Mario mario;
 
     /**
      * viewクラス継承
@@ -33,6 +30,7 @@ public class GameView extends View {
         super(context);
 
         marioBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.mario);
+        mario = new Mario(marioBitmap, 0, 0);
     }
 
     /**
@@ -50,8 +48,7 @@ public class GameView extends View {
             int top = height - GROUND_HEIGHT;
             ground = new Ground(0, top, width, height);
         }
-
-        canvas.drawBitmap(marioBitmap, 0, 0, PAINT);
+        mario.draw(canvas);
         ground.draw(canvas);
     }
 }
