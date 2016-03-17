@@ -10,14 +10,33 @@ import android.graphics.BitmapFactory;
 //Canvasクラスは、文字、図形等を描画することができます。
 import android.graphics.Canvas;
 //MotionEventは、デバイスの種類に応じて、絶対的または、相対的な移動や その他のデータのいづれかを保持することができます。
+import android.graphics.Color;
 import android.view.MotionEvent;
-//Viewクラスは、ビューの土台となる機能を持っているクラスです。
-import android.view.View;
+/*
+Surfaceのピクセルを実際にいじったり、Surfaceの変化を監視する人のためのインターフェイス。
+SurfaceViewにはgetHolder()メソッドが用意されていて、そのSurfaceViewのホルダーのインスタンスを取得できる。
+ */
+import android.view.SurfaceHolder;
+/*
+SurfaceViewは、viewクラスを継承したクラスです。
+Viewクラスよりも高速に描画ができ、ゲームプログラムに適しています。
+SurfaceViewは、UIスレッドから独立して処理を行うビューです。
+リアルタイムで処理を行うためには、UIスレッドから、独立したスレッドを起動を行う必要があります。
+SurfaceViewは、アプリケーションのスレッドと行が処理のスレッドが独立している為、定期的な処理に向いています。
+ */
+import android.view.SurfaceView;
+
+/*
+原子的な更新が可能な boolean 値です。原子変数のプロパティーの詳細は、java.util.concurrent.atomic パッケージ仕様を参照してください。
+AtomicBoolean は、原子更新フラグなどのアプリケーションで使用されます。 Boolean の代替として使用することはできません。
+ */
+import java.util.concurrent.atomic.AtomicBoolean;
+
 
 /**
  * Created by kokada on 16/03/17.
  */
-public class GameView extends View {
+public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     private static final int GROUND_MOVE_TO_LEFT = 10;
     private static final int GROUND_HEIGHT = 50;
@@ -27,11 +46,11 @@ public class GameView extends View {
     private Mario mario;
 
     /**
-     * 自機と地面との距離を計算
+     * 自機と地面との距離
      */
     private final Mario.Callback marioCallback = new Mario.Callback() {
         /**
-         *
+         * 自機と地面との距離を返す
          * @param mario
          * @return
          */
@@ -39,7 +58,6 @@ public class GameView extends View {
         public int getDistanceFromGround(Mario mario) {
             //地面から左右ではみ出しているかの判定
             boolean horizontal = !(mario.rect.left >= ground.rect.right || mario.rect.right <= ground.rect.left);
-
             if (!horizontal) {
                 return Integer.MAX_VALUE;
             }
@@ -47,6 +65,87 @@ public class GameView extends View {
             return ground.rect.top - mario.rect.bottom;
         }
     };
+
+    private static final long DRAW_INTERVAL = 1000 / 80;
+
+    /**
+     * 画面描写
+     */
+    private class DrawTread extends Thread {
+        private final AtomicBoolean isFinished = new AtomicBoolean(false);
+        //描写止める
+        public void finish() {
+            isFinished.set(true);
+        }
+
+        //描写開始
+        @Override
+        public void run() {
+            SurfaceHolder holder = getHolder();
+
+            while (!isFinished.get()) {
+                if (holder.isCreating()) {
+                    continue;
+                }
+                Canvas canvas = holder.lockCanvas();
+                if (canvas == null) {
+                    continue;
+                }
+                drawGame(canvas);
+
+                holder.unlockCanvasAndPost(canvas);
+
+                synchronized (this) {
+                    try {
+                        //描写間隔
+                        wait(DRAW_INTERVAL);
+                    } catch (InterruptedException e) {
+                    }
+                }
+            }
+        }
+    }
+
+    private DrawTread drawTread;
+
+    /**
+     * 描写を始める判定
+     * @return
+     */
+    public void startDrawThread() {
+        stopDrawThread();
+
+        drawTread = new DrawTread();
+        drawTread.start();
+    }
+
+    /**
+     * 描写を止める判定
+     * @return
+     */
+    public boolean stopDrawThread() {
+        if (drawTread == null) {
+            return false;
+        }
+        drawTread.finish();
+        drawTread = null;
+
+        return true;
+    }
+
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+
+    }
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        startDrawThread();
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holderstart) {    startDrawThread();
+    }
 
     /**
      * viewクラス継承
@@ -57,14 +156,16 @@ public class GameView extends View {
 
         marioBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.mario);
         mario = new Mario(marioBitmap, 0, 0, marioCallback);
+
+        getHolder().addCallback(this);
     }
 
     /**
-     * 画面描写
+     * キャンバス描写
      * @param canvas
      */
-    public void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
+    private void drawGame(Canvas canvas) {
+        canvas.drawColor(Color.YELLOW);
 
         int width = canvas.getWidth();
         int height = canvas.getHeight();
@@ -73,13 +174,11 @@ public class GameView extends View {
             int top = height - GROUND_HEIGHT;
             ground = new Ground(0, top, width, height);
         }
+
         mario.move();
         ground.move(GROUND_MOVE_TO_LEFT);
         mario.draw(canvas);
         ground.draw(canvas);
-
-        //再度onDrawを実行
-        invalidate();
     }
 
     //ミリ秒
@@ -92,12 +191,14 @@ public class GameView extends View {
      */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 touchDownStartTime = System.currentTimeMillis();
                 return true;
             case MotionEvent.ACTION_UP:
                 float time = System.currentTimeMillis() - touchDownStartTime;
+                //タッチ時間を判定して自機をジャンプさせる
                 jumpMario(time);
                 touchDownStartTime = 0;
                 break;
