@@ -59,7 +59,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     //地面設定
-    private static final int GROUND_MOVE_TO_LEFT = 10;
+    private static final int GROUND_MOVE_TO_LEFT = 20;
     private static final int GROUND_HEIGHT = 50;
 
     private static final int ADD_GROUND_COUNT = 5;
