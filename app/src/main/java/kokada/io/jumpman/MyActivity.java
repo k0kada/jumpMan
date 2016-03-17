@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 public class MyActivity extends AppCompatActivity implements GameView.GameOverCallback {
+
     private GameView gameView;
 
     /**
