@@ -98,11 +98,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 }
 
                 //地面(ブロック)から左右ではみ出しているかの判定
-                boolean horizontal = !(mario.rect.left >= ground.rect.right || mario.rect.right <= ground.rect.left);
+                boolean horizontal = !(mario.hitRect.left >= ground.rect.right || mario.hitRect.right <= ground.rect.left);
                 //はみ出していなかったら地面(ブロック)までの距離を返す
                 if (horizontal) {
                     //gameover判定
-                    int distanceFromGround = ground.rect.top - mario.rect.bottom;
+                    int distanceFromGround = ground.rect.top - mario.hitRect.bottom;
                     //自機が地面の下に行ったらゲームオーバー
                     if (distanceFromGround < 0) {
                         gameOver();

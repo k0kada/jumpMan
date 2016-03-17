@@ -4,6 +4,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+//短形描写
+import android.graphics.RectF;
 
 
 /**
@@ -11,6 +13,10 @@ import android.graphics.Rect;
  * 自機表示クラス
  */
 public class Mario {
+    private static final int BLOOL_SIZE = 100;
+
+    private static final Rect BITMAP_SRC_JUMPING = new Rect(0, BLOOL_SIZE * 2, BLOOL_SIZE, BLOOL_SIZE * 3);
+    private static final Rect BITMAP_SRC_RUNNING = new Rect(BLOOL_SIZE * 3, 0, BLOOL_SIZE * 4, BLOOL_SIZE);
 
     private static final int HIT_MARGIN_LEFT = 30;
     private static final int HIT_MARGIN_RIGHT = 10;
@@ -22,7 +28,7 @@ public class Mario {
 
     private Bitmap bitmap;
 
-    final Rect rect;
+    final RectF rect;
     final Rect hitRect;
 
     /**
@@ -35,9 +41,9 @@ public class Mario {
 
     public Mario(Bitmap bitmap, int left, int top, Callback callback) {
         this.bitmap = bitmap;
-        int right = left + bitmap.getWidth();
-        int bottom = top + bitmap.getHeight();
-        this.rect = new Rect(left, top, right, bottom);
+        int right = left + BLOOL_SIZE;
+        int bottom = top + BLOOL_SIZE;
+        this.rect = new RectF(left, top, right, bottom);
         this.hitRect = new Rect(left, top, right, bottom);
         this.hitRect.left += HIT_MARGIN_LEFT;
         this.hitRect.right -= HIT_MARGIN_RIGHT;
@@ -46,7 +52,12 @@ public class Mario {
     }
 
     public void draw(Canvas canvas) {
-        canvas.drawBitmap(bitmap, rect.left, rect.top, paint);
+        Rect src = BITMAP_SRC_RUNNING;
+        if (velocity != 0) {
+            src = BITMAP_SRC_JUMPING;
+        }
+
+        canvas.drawBitmap(bitmap, src, rect, paint);
     }
 
     private float velocity = 0;
@@ -69,12 +80,14 @@ public class Mario {
         }
 
         rect.offset(0, Math.round(-1 * velocity));
+        hitRect.offset(0, Math.round(-1 * velocity));
 
-        //地面から激突したら止まる
+        //地面との距離が0なら地面の上に止まる
         if (distanceFromGround == 0) {
             return;
         } else if (distanceFromGround < 0) {
             rect.offset(0, distanceFromGround);
+            hitRect.offset(0, distanceFromGround);
             return;
         }
 
