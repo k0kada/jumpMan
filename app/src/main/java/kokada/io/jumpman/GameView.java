@@ -19,6 +19,7 @@ import android.view.View;
  */
 public class GameView extends View {
 
+    private static final int GROUND_MOVE_TO_LEFT = 10;
     private static final int GROUND_HEIGHT = 50;
     private Ground ground;
 
@@ -29,8 +30,20 @@ public class GameView extends View {
      * 自機と地面との距離を計算
      */
     private final Mario.Callback marioCallback = new Mario.Callback() {
+        /**
+         *
+         * @param mario
+         * @return
+         */
         @Override
         public int getDistanceFromGround(Mario mario) {
+            //地面から左右ではみ出しているかの判定
+            boolean horizontal = !(mario.rect.left >= ground.rect.right || mario.rect.right <= ground.rect.left);
+
+            if (!horizontal) {
+                return Integer.MAX_VALUE;
+            }
+
             return ground.rect.top - mario.rect.bottom;
         }
     };
@@ -47,8 +60,7 @@ public class GameView extends View {
     }
 
     /**
-     * マリオ画像読み込み
-     * @Override
+     * 画面描写
      * @param canvas
      */
     public void onDraw(Canvas canvas) {
@@ -62,6 +74,7 @@ public class GameView extends View {
             ground = new Ground(0, top, width, height);
         }
         mario.move();
+        ground.move(GROUND_MOVE_TO_LEFT);
         mario.draw(canvas);
         ground.draw(canvas);
 

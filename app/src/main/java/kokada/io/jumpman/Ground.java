@@ -17,14 +17,31 @@ public class Ground {
 
     final Rect rect;
 
-    //Groundのコンストラクタ
+    /**
+     * Groundのコンストラクタ
+     * @param left
+     * @param top
+     * @param right
+     * @param bottom
+     */
     public Ground(int left, int top, int right, int bottom) {
         rect = new Rect(left, top, right, bottom);
         paint.setColor(COLOR);
     }
 
-    //Rectオブジェクトの位置に茶色の四角形を描画する
+    /**
+     * Rectオブジェクトの位置に茶色の四角形を描画する
+     * @param canvas
+     */
     public void draw(Canvas canvas) {
         canvas.drawRect(rect, paint);
+    }
+
+    /**
+     * 地面を移動させる
+     * @param moveToLeft
+     */
+    public void move(int moveToLeft) {
+        rect.offset(-moveToLeft, 0);
     }
 }
