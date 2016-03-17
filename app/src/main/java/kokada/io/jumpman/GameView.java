@@ -26,6 +26,9 @@ SurfaceViewは、アプリケーションのスレッドと行が処理のスレ
  */
 import android.view.SurfaceView;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 /*
 原子的な更新が可能な boolean 値です。原子変数のプロパティーの詳細は、java.util.concurrent.atomic パッケージ仕様を参照してください。
 AtomicBoolean は、原子更新フラグなどのアプリケーションで使用されます。 Boolean の代替として使用することはできません。
@@ -40,7 +43,16 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     private static final int GROUND_MOVE_TO_LEFT = 10;
     private static final int GROUND_HEIGHT = 50;
-    private Ground ground;
+
+    private static final int ADD_GROUND_COUNT = 5;
+
+    private static final int GROUND_WIDTH = 340;
+    private static final int GROUND_BLOCK_HEIGHT = 100;
+
+    private Ground lastGround;
+
+    private final List<Ground> groundList = new ArrayList<>();
+    private final Random rand = new Random(System.currentTimeMillis());
 
     private Bitmap marioBitmap;
     private Mario mario;
@@ -56,13 +68,26 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
          */
         @Override
         public int getDistanceFromGround(Mario mario) {
-            //地面から左右ではみ出しているかの判定
-            boolean horizontal = !(mario.rect.left >= ground.rect.right || mario.rect.right <= ground.rect.left);
-            if (!horizontal) {
-                return Integer.MAX_VALUE;
+            int width = getWidth();
+            int height = getHeight();
+
+            //拡張for文
+            for (Ground ground : groundList) {
+
+                //今までいた地面(ブロック)から外れたら
+                if (!ground.isShown(width, height)) {
+                    continue;
+                }
+
+                //地面(ブロック)から左右ではみ出しているかの判定
+                boolean horizontal = !(mario.rect.left >= ground.rect.right || mario.rect.right <= ground.rect.left);
+                //はみ出していなかったら地面(ブロック)までの距離を返す
+                if (horizontal) {
+                    return ground.rect.top - mario.rect.bottom;
+                }
             }
 
-            return ground.rect.top - mario.rect.bottom;
+            return Integer.MAX_VALUE;
         }
     };
 
@@ -84,6 +109,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             SurfaceHolder holder = getHolder();
 
             while (!isFinished.get()) {
+
                 if (holder.isCreating()) {
                     continue;
                 }
@@ -109,7 +135,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     private DrawTread drawTread;
 
     /**
-     * 描写を始める判定
+     * 描写を始める
      * @return
      */
     public void startDrawThread() {
@@ -170,15 +196,42 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         int width = canvas.getWidth();
         int height = canvas.getHeight();
 
-        if (ground == null) {
+        if (lastGround == null) {
             int top = height - GROUND_HEIGHT;
-            ground = new Ground(0, top, width, height);
+            lastGround = new Ground(0, top, width, height);
+            groundList.add(lastGround);
+        }
+
+        if (lastGround.isShown(width, height)) {
+            for (int i = 0; i < ADD_GROUND_COUNT; i++) {
+                int left = lastGround.rect.right;
+
+                //地面の高さをランダムに生成
+                int groundHeight = rand.nextInt(height / GROUND_BLOCK_HEIGHT) * GROUND_HEIGHT / 2 + GROUND_HEIGHT;
+                System.out.println(groundHeight);
+                int top = height - groundHeight;
+                int right = left + GROUND_WIDTH;
+                lastGround = new Ground(left, top, right, height);
+                groundList.add(lastGround);
+            }
+        }
+
+        for (int i = 0; i < groundList.size(); i++) {
+            Ground ground = groundList.get(i);
+
+            if (ground.isAvailable()) {
+                ground.move(GROUND_MOVE_TO_LEFT);
+                if (ground.isShown(width, height)) {
+                    ground.draw(canvas);
+                }
+            } else {
+                groundList.remove(ground);
+                i--;
+            }
         }
 
         mario.move();
-        ground.move(GROUND_MOVE_TO_LEFT);
         mario.draw(canvas);
-        ground.draw(canvas);
     }
 
     //ミリ秒

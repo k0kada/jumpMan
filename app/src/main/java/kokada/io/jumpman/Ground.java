@@ -44,4 +44,23 @@ public class Ground {
     public void move(int moveToLeft) {
         rect.offset(-moveToLeft, 0);
     }
+
+    /**
+     *一部でも地面が重なっているかを返す。
+     * @param width
+     * @param height
+     * @return
+     */
+    public boolean isShown(int width, int height) {
+        return rect.intersects(0, 0, width, height);
+    }
+
+    /**
+     *地面が表示の対象になっているかを返す
+     * @return
+     */
+    public boolean isAvailable() {
+        return rect.right > 0;
+    }
+
 }
