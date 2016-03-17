@@ -11,6 +11,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 //MotionEventは、デバイスの種類に応じて、絶対的または、相対的な移動や その他のデータのいづれかを保持することができます。
 import android.graphics.Color;
+/**
+ * スレッド間通信のための仕組み。(Handlerインスタンスを生成したスレッドへイベントを送るための仕組み)
+ */
+import android.os.Handler;
 import android.view.MotionEvent;
 /*
 Surfaceのピクセルを実際にいじったり、Surfaceの変化を監視する人のためのインターフェイス。
@@ -83,7 +87,15 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 boolean horizontal = !(mario.rect.left >= ground.rect.right || mario.rect.right <= ground.rect.left);
                 //はみ出していなかったら地面(ブロック)までの距離を返す
                 if (horizontal) {
-                    return ground.rect.top - mario.rect.bottom;
+                    //gameover判定
+                    int distanceFromGround = ground.rect.top - mario.rect.bottom;
+                    //自機が地面の下に行ったらゲームオーバー
+                    if (distanceFromGround < 0) {
+                        gameOver();
+                        return Integer.MAX_VALUE;
+                    }
+
+                    return distanceFromGround;
                 }
             }
 
@@ -170,7 +182,44 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     @Override
-    public void surfaceDestroyed(SurfaceHolder holderstart) {    startDrawThread();
+    public void surfaceDestroyed(SurfaceHolder holderstart) {
+        startDrawThread();
+    }
+
+    //SurfaceViewの描画スレッド内からUIを変更するために使用するHandlerを追加
+    private final Handler handler = new Handler();
+
+    /**
+     * GameViewのイベントを外部に伝えるためのCallbackインターフェイスを追加
+     */
+    public interface GameOverCallback {
+        void onGameOver();
+    }
+
+    private GameOverCallback gameOverCallback;
+
+    public void setCallback (GameOverCallback callback) {
+        gameOverCallback = callback;
+    }
+
+    private final AtomicBoolean isGameOver = new AtomicBoolean();
+
+    private void gameOver() {
+        if (isGameOver.get()) {
+            return;
+        }
+
+        //フラグをtrueにセットする
+        isGameOver.set(true);
+        //自機の加速度を0にする
+        mario.stop();
+
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                gameOverCallback.onGameOver();
+            }
+        });
     }
 
     /**

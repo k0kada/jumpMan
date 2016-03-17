@@ -47,6 +47,10 @@ public class Mario {
         velocity = (power * WEIGHT);
     }
 
+    public void stop() {
+        velocity = 0;
+    }
+
     public void move() {
         int distanceFromGround = callback.getDistanceFromGround(this);
 
