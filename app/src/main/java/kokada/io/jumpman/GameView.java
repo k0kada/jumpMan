@@ -11,6 +11,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 //MotionEventは、デバイスの種類に応じて、絶対的または、相対的な移動や その他のデータのいづれかを保持することができます。
 import android.graphics.Color;
+/*
+Paintオブジェクトは、描画する場合に使用されるペンのようなものです。
+ペンのように描画する文字や図形の色や線の太さ等を指定することができます。
+ */
+import android.graphics.Paint;
 /**
  * スレッド間通信のための仕組み。(Handlerインスタンスを生成したスレッドへイベントを送るための仕組み)
  */
@@ -45,6 +50,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
+    //ジャンプゲージ
+    private static final float POWER_GAUGE_HEIGHT = 30;
+    private static final Paint PAINT_POWER_GAUGE = new Paint();
+
+    static {
+        PAINT_POWER_GAUGE.setColor(Color.RED);
+    }
+
+    //地面設定
     private static final int GROUND_MOVE_TO_LEFT = 10;
     private static final int GROUND_HEIGHT = 50;
 
@@ -281,6 +295,12 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
         mario.move();
         mario.draw(canvas);
+
+        //タッチ時間に応じてパワーゲージを表示
+        if (touchDownStartTime > 0) {
+            float elapsedTime = System.currentTimeMillis() - touchDownStartTime;
+            canvas.drawRect(0, 0, width * (elapsedTime / MAX_TOUCH_TIME), POWER_GAUGE_HEIGHT, PAINT_POWER_GAUGE);
+        }
     }
 
     //ミリ秒
