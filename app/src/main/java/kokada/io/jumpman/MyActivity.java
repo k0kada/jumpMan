@@ -29,11 +29,14 @@ public class MyActivity extends AppCompatActivity implements GameView.GameOverCa
             }
         });
 
-//        alertDlg.setNegativeButton("メニューへ", new DialogInterface.OnClickListener() {
-//            public void onClick(DialogInterface dialog, int which) {
-//                onDestroy();
-//            }
-//        });
+        alertDlg.setNegativeButton("メニューへ", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                //メニューへ遷移
+                startActivity(new Intent(MyActivity.this, MenuActivity.class));
+                //Activity停止
+                finish();
+            }
+        });
 
         //ダイアログ表示
         alertDlg.create().show();
@@ -48,6 +51,5 @@ public class MyActivity extends AppCompatActivity implements GameView.GameOverCa
         gameView.setCallback(this);
         setContentView(gameView);
     }
-
 
 }
