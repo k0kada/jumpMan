@@ -14,13 +14,17 @@ public class MyActivity extends AppCompatActivity implements GameView.GameOverCa
      */
     @Override
     public void onGameOver() {
+        final Bundle savedInstanceState = new Bundle();
+
         AlertDialog.Builder alertDlg = new AlertDialog.Builder(this);
         alertDlg.setTitle("Game Over");
         alertDlg.setMessage("やり直しますか？");
         alertDlg.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
+                //再起動
+                onDestroy();
+                onCreate(savedInstanceState);
             }
         });
         alertDlg.create().show();
@@ -35,5 +39,6 @@ public class MyActivity extends AppCompatActivity implements GameView.GameOverCa
         gameView.setCallback(this);
         setContentView(gameView);
     }
+
 
 }
