@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
 
 public class MyActivity extends AppCompatActivity implements GameView.GameOverCallback {
 
@@ -19,7 +20,7 @@ public class MyActivity extends AppCompatActivity implements GameView.GameOverCa
         AlertDialog.Builder alertDlg = new AlertDialog.Builder(this);
         alertDlg.setTitle("Game Over");
         alertDlg.setMessage("やり直しますか？");
-        alertDlg.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+        alertDlg.setPositiveButton("やり直す", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 //再起動
@@ -27,6 +28,14 @@ public class MyActivity extends AppCompatActivity implements GameView.GameOverCa
                 onCreate(savedInstanceState);
             }
         });
+
+//        alertDlg.setNegativeButton("メニューへ", new DialogInterface.OnClickListener() {
+//            public void onClick(DialogInterface dialog, int which) {
+//                onDestroy();
+//            }
+//        });
+
+        //ダイアログ表示
         alertDlg.create().show();
 
     }
