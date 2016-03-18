@@ -47,6 +47,14 @@ public class MainActivity extends AppCompatActivity implements GameView.GameOver
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Intent i = getIntent();
+        String stageId = i.getStringExtra("stageId");
+
+        switch (stageId) {
+            case "stage1":
+            break;
+
+        }
         gameView = new GameView(this);
         gameView.setCallback(this);
         setContentView(gameView);

@@ -93,7 +93,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         public int getDistanceFromGround(Mario mario) {
             int width = getWidth();
             int height = getHeight();
-
             //拡張for文
             for (Ground ground : groundList) {
 
