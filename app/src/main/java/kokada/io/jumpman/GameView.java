@@ -233,6 +233,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         //自機の加速度を0にする
         mario.stop();
 
+
+
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -279,13 +281,16 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             for (int i = 0; i < ADD_GROUND_COUNT; i++) {
 
                 //地面が生成されるごとにスコアを足す
-                score += 10;
+                if (isGameOver.get() != true) {
+                    score += 10;
+                }
 
                 int left = lastGround.rect.right;
 
                 //地面の高さをランダムに生成
                 int groundHeight = rand.nextInt(height / GROUND_BLOCK_HEIGHT) * GROUND_HEIGHT / 2 + GROUND_HEIGHT;
-                System.out.println(groundHeight);
+                //System.out.println(groundHeight);
+
                 int top = height - groundHeight;
                 int right = left + GROUND_WIDTH;
                 lastGround = new Ground(left, top, right, height);
