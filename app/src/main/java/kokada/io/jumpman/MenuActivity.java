@@ -14,7 +14,7 @@ public class MenuActivity extends Activity implements View.OnClickListener {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
-            setContentView(R.layout.activity_menu);
+            setContentView(R.layout.activity_main);
             // ボタンコントロールのインスタンスを取得
             Button button = (Button)findViewById(R.id.GameStartButton);
 
@@ -25,7 +25,7 @@ public class MenuActivity extends Activity implements View.OnClickListener {
         // ボタンクリックイベント
         public void onClick(View v) {
             // ゲームメイン画面に遷移
-            Intent intent = new Intent( MenuActivity.this, MyActivity.class );
+            Intent intent = new Intent( MenuActivity.this, MainActivity.class );
             startActivity( intent );
         }
 }

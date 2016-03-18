@@ -6,7 +6,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
 
-public class MyActivity extends AppCompatActivity implements GameView.GameOverCallback {
+public class MainActivity extends AppCompatActivity implements GameView.GameOverCallback {
 
     private GameView gameView;
 
@@ -32,7 +32,7 @@ public class MyActivity extends AppCompatActivity implements GameView.GameOverCa
         alertDlg.setNegativeButton("メニューへ", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 //メニューへ遷移
-                startActivity(new Intent(MyActivity.this, MenuActivity.class));
+                startActivity(new Intent(MainActivity.this, MenuActivity.class));
                 //Activity停止
                 finish();
             }
