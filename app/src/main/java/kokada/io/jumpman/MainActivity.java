@@ -6,9 +6,10 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
 
-public class MainActivity extends AppCompatActivity implements GameView.GameOverCallback {
+public class MainActivity extends AppCompatActivity implements Stage1View.GameOverCallback, Stage2View.GameOverCallback {
 
-    private GameView gameView;
+    private Stage1View stage1View;
+    private Stage2View stage2View;
 
     /**
      * ゲームオーバーの文面
@@ -52,12 +53,19 @@ public class MainActivity extends AppCompatActivity implements GameView.GameOver
 
         switch (stageId) {
             case "stage1":
-            break;
+                stage1View = new Stage1View(this);
+                stage1View.setCallback(this);
+                setContentView(stage1View);
+                break;
+
+            case "stage2":
+                stage2View = new Stage2View(this);
+                stage2View.setCallback(this);
+                setContentView(stage2View);
+                break;
 
         }
-        gameView = new GameView(this);
-        gameView.setCallback(this);
-        setContentView(gameView);
+
     }
 
 }

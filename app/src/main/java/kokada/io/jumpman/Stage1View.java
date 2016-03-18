@@ -48,7 +48,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Created by kokada on 16/03/17.
  */
-public class GameView extends SurfaceView implements SurfaceHolder.Callback {
+public class Stage1View extends SurfaceView implements SurfaceHolder.Callback {
 
     //ジャンプゲージ
     private static final float POWER_GAUGE_HEIGHT = 30;
@@ -246,7 +246,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
      * viewクラス継承
      * @param context
      */
-    public GameView(Context context) {
+    public Stage1View(Context context) {
         super(context);
 
         marioBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.mario);
