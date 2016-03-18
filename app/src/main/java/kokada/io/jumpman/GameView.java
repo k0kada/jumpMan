@@ -58,6 +58,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         PAINT_POWER_GAUGE.setColor(Color.RED);
     }
 
+    //スコア表示
+    private static final float SCORE_TEXT_SIZE = 80.0f;
+    private long score;
+    private static final Paint paintScore = new Paint();
+
     //地面設定
     private static final int GROUND_MOVE_TO_LEFT = 20;
     private static final int GROUND_HEIGHT = 50;
@@ -246,6 +251,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         marioBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.mario);
         mario = new Mario(marioBitmap, 0, 0, marioCallback);
 
+        //スコア設定
+        paintScore.setColor(Color.BLACK);
+        paintScore.setTextSize(SCORE_TEXT_SIZE);
+        paintScore.setAntiAlias(true);
+
         getHolder().addCallback(this);
     }
 
@@ -267,6 +277,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
         if (lastGround.isShown(width, height)) {
             for (int i = 0; i < ADD_GROUND_COUNT; i++) {
+
+                //地面が生成されるごとにスコアを足す
+                score += 10;
+
                 int left = lastGround.rect.right;
 
                 //地面の高さをランダムに生成
@@ -276,6 +290,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                 int right = left + GROUND_WIDTH;
                 lastGround = new Ground(left, top, right, height);
                 groundList.add(lastGround);
+
             }
         }
 
@@ -293,6 +308,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             }
         }
 
+        //マリオ表示
         mario.move();
         mario.draw(canvas);
 
@@ -301,6 +317,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             float elapsedTime = System.currentTimeMillis() - touchDownStartTime;
             canvas.drawRect(0, 0, width * (elapsedTime / MAX_TOUCH_TIME), POWER_GAUGE_HEIGHT, PAINT_POWER_GAUGE);
         }
+
+        //スコア表示
+        canvas.drawText("Score:" + score, 0, SCORE_TEXT_SIZE, paintScore);
     }
 
     //ミリ秒
