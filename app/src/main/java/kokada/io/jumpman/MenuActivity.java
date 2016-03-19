@@ -47,7 +47,6 @@ public class MenuActivity extends Activity implements View.OnClickListener {
 
             // ゲームメイン画面に遷移
             Intent intent = new Intent( MenuActivity.this, MainActivity.class );
-            System.out.println(stageId);
             intent.putExtras(stageId);
             startActivity( intent );
         }

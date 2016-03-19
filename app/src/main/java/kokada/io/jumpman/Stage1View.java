@@ -105,6 +105,7 @@ public class Stage1View extends SurfaceView implements SurfaceHolder.Callback {
                 boolean horizontal = !(mario.hitRect.left >= ground.rect.right || mario.hitRect.right <= ground.rect.left);
                 //はみ出していなかったら地面(ブロック)までの距離を返す
                 if (horizontal) {
+
                     //gameover判定
                     int distanceFromGround = ground.rect.top - mario.hitRect.bottom;
                     //自機が地面の下に行ったらゲームオーバー
@@ -284,12 +285,11 @@ public class Stage1View extends SurfaceView implements SurfaceHolder.Callback {
                     score += 10;
                 }
 
-                int left = lastGround.rect.right;
-
                 //地面の高さをランダムに生成
                 int groundHeight = rand.nextInt(height / GROUND_BLOCK_HEIGHT) * GROUND_HEIGHT / 2 + GROUND_HEIGHT;
                 //System.out.println(groundHeight);
 
+                int left = lastGround.rect.right;
                 int top = height - groundHeight;
                 int right = left + GROUND_WIDTH;
                 lastGround = new Ground(left, top, right, height);

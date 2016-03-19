@@ -76,6 +76,12 @@ public class Stage2View extends SurfaceView implements SurfaceHolder.Callback {
                 boolean horizontal = !(mario.hitRect.left >= ground.rect.right || mario.hitRect.right <= ground.rect.left);
                 //はみ出していなかったら地面(ブロック)までの距離を返す
                 if (horizontal) {
+
+                    //地面が穴だったらゲームオーバー
+                    if (!ground.isSolid()) {
+                        return Integer.MAX_VALUE;
+                    }
+
                     //gameover判定
                     int distanceFromGround = ground.rect.top - mario.hitRect.bottom;
                     //自機が地面の下に行ったらゲームオーバー
@@ -255,15 +261,19 @@ public class Stage2View extends SurfaceView implements SurfaceHolder.Callback {
                     score += 50;
                 }
 
-                int left = lastGround.rect.right;
-
                 //地面の高さをランダムに生成
                 int groundHeight = rand.nextInt(height / GROUND_BLOCK_HEIGHT) * GROUND_HEIGHT / 2 + GROUND_HEIGHT;
-                //System.out.println(groundHeight);
 
+                int left = lastGround.rect.right;
                 int top = height - groundHeight;
                 int right = left + GROUND_WIDTH;
-                lastGround = new Ground(left, top, right, height);
+
+                //偶数だったら地面、奇数だったら穴
+                if (i % 2 == 0) {
+                    lastGround = new Ground(left, top, right, height);
+                } else {
+                    lastGround = new Blank(left, height, right, height);
+                }
                 groundList.add(lastGround);
 
             }

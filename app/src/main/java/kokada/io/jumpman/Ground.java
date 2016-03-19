@@ -63,4 +63,11 @@ public class Ground {
         return rect.right > 0;
     }
 
+    /**
+     * 穴じゃない地面
+     * @return
+     */
+    public boolean isSolid() {
+        return true;
+    }
 }
