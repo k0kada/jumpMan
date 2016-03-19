@@ -77,7 +77,7 @@ public class Stage2View extends SurfaceView implements SurfaceHolder.Callback {
                 //はみ出していなかったら地面(ブロック)までの距離を返す
                 if (horizontal) {
 
-                    //地面が穴だったらゲームオーバー
+                    //地面が穴だったら
                     if (!ground.isSolid()) {
                         return Integer.MAX_VALUE;
                     }

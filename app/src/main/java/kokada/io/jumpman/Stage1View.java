@@ -287,7 +287,6 @@ public class Stage1View extends SurfaceView implements SurfaceHolder.Callback {
 
                 //地面の高さをランダムに生成
                 int groundHeight = rand.nextInt(height / GROUND_BLOCK_HEIGHT) * GROUND_HEIGHT / 2 + GROUND_HEIGHT;
-                //System.out.println(groundHeight);
 
                 int left = lastGround.rect.right;
                 int top = height - groundHeight;

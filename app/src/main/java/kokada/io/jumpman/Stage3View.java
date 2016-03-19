@@ -44,8 +44,11 @@ public class Stage3View extends SurfaceView implements SurfaceHolder.Callback {
     private static final int GROUND_BLOCK_HEIGHT = 100;
 
     private Ground lastGround;
+    private Ground topGround;
 
     private final List<Ground> groundList = new ArrayList<>();
+    private final List<Ground> topGroundList = new ArrayList<>() ;
+
     private final Random rand = new Random(System.currentTimeMillis());
 
     private Bitmap marioBitmap;
@@ -64,7 +67,32 @@ public class Stage3View extends SurfaceView implements SurfaceHolder.Callback {
         public int getDistanceFromGround(Mario mario) {
             int width = getWidth();
             int height = getHeight();
-            //拡張for文
+
+            //上の地面判定
+            for (Ground topGround : topGroundList) {
+
+                //今までいた地面(ブロック)から外れたら
+                if (!topGround.isShown(width, height)) {
+                    continue;
+                }
+
+                //地面(ブロック)から左右ではみ出しているかの判定
+                boolean horizontal = !(mario.hitRect.left >= topGround.rect.right || mario.hitRect.right <= topGround.rect.left);
+                //はみ出していなかったら地面(ブロック)までの距離を返す
+                if (horizontal) {
+
+                    //gameover判定
+                    int topDistanceFromGround = mario.hitRect.top - topGround.rect.bottom;
+
+                    //自機が地面の下に行ったらゲームオーバー
+                    if (topDistanceFromGround <= 0) {
+                        gameOver();
+                        return Integer.MAX_VALUE;
+                    }
+                }
+            }
+
+            //下の地面判定
             for (Ground ground : groundList) {
 
                 //今までいた地面(ブロック)から外れたら
@@ -76,11 +104,6 @@ public class Stage3View extends SurfaceView implements SurfaceHolder.Callback {
                 boolean horizontal = !(mario.hitRect.left >= ground.rect.right || mario.hitRect.right <= ground.rect.left);
                 //はみ出していなかったら地面(ブロック)までの距離を返す
                 if (horizontal) {
-
-                    //地面が穴だったらゲームオーバー
-                    if (!ground.isSolid()) {
-                        return Integer.MAX_VALUE;
-                    }
 
                     //gameover判定
                     int distanceFromGround = ground.rect.top - mario.hitRect.bottom;
@@ -247,6 +270,7 @@ public class Stage3View extends SurfaceView implements SurfaceHolder.Callback {
         int width = canvas.getWidth();
         int height = canvas.getHeight();
 
+        //スタート直後の地面
         if (lastGround == null) {
             int top = height - GROUND_HEIGHT;
             lastGround = new Ground(0, top, width, height);
@@ -261,20 +285,20 @@ public class Stage3View extends SurfaceView implements SurfaceHolder.Callback {
                     score += 50;
                 }
 
-                //地面の高さをランダムに生成
+                //下の地面の高さをランダムに生成
                 int groundHeight = rand.nextInt(height / GROUND_BLOCK_HEIGHT) * GROUND_HEIGHT / 2 + GROUND_HEIGHT;
+                //上の地面の高さをランダムに生成
+                int topGroundHeight = rand.nextInt(GROUND_BLOCK_HEIGHT * 5);
 
                 int left = lastGround.rect.right;
                 int top = height - groundHeight;
                 int right = left + GROUND_WIDTH;
 
-                //偶数だったら地面、奇数だったら穴
-                if (i % 2 == 0) {
-                    lastGround = new Ground(left, top, right, height);
-                } else {
-                    lastGround = new Blank(left, height, right, height);
-                }
+                lastGround = new Ground(left, top, right, height);
+                topGround = new Ground(left, 0, right, topGroundHeight);
+
                 groundList.add(lastGround);
+                topGroundList.add(topGround);
 
             }
         }
@@ -289,6 +313,20 @@ public class Stage3View extends SurfaceView implements SurfaceHolder.Callback {
                 }
             } else {
                 groundList.remove(ground);
+                i--;
+            }
+        }
+
+        for (int i = 0; i < topGroundList.size(); i++) {
+            Ground ground = topGroundList.get(i);
+
+            if (ground.isAvailable()) {
+                ground.move(GROUND_MOVE_TO_LEFT);
+                if (ground.isShown(width, height)) {
+                    ground.draw(canvas);
+                }
+            } else {
+                topGroundList.remove(ground);
                 i--;
             }
         }

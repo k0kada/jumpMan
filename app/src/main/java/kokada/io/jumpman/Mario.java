@@ -94,4 +94,5 @@ public class Mario {
         //下へ落下
         velocity -= GRAVITY;
     }
+
 }
