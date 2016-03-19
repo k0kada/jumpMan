@@ -34,4 +34,11 @@
         android:layout_width="match_parent"
         android:id="@+id/stage3">
     </Button>
+
+    <Button
+        android:text="ステージ4"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:id="@+id/stage4">
+    </Button>
 </LinearLayout>

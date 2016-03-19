@@ -7,11 +7,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.content.Intent;
 
 public class MainActivity extends AppCompatActivity
-        implements Stage1View.GameOverCallback,Stage2View.GameOverCallback, Stage31View.GameOverCallback {
+        implements Stage1View.GameOverCallback,Stage2View.GameOverCallback, Stage31View.GameOverCallback, Stage4View.GameOverCallback {
 
     private Stage1View stage1View;
     private Stage2View stage2View;
     private Stage31View stage3View;
+    private Stage4View stage4View;
 
     /**
      * ゲームオーバーの文面
@@ -72,6 +73,11 @@ public class MainActivity extends AppCompatActivity
                 setContentView(stage3View);
                 break;
 
+            case "stage4":
+                stage4View = new Stage4View(this);
+                stage4View.setCallback(this);
+                setContentView(stage4View);
+                break;
         }
 
     }

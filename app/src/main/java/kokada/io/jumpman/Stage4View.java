@@ -1,5 +1,8 @@
 package kokada.io.jumpman;
 
+//アプリケーションの環境情報とかをグローバル(Android OSの全域）で受け渡しするためのインターフェース
+//アクティビティの起動とかブロードキャスト、インテントの受け取りといった他のアプリからの応答を行え、アンドロイド特有のリソース・クラスにアクセスすることも出来る。
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -19,7 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Created by kokada on 16/03/17.
  */
-public class Stage31View extends SurfaceView implements SurfaceHolder.Callback {
+public class Stage4View extends SurfaceView implements SurfaceHolder.Callback {
 
     //ジャンプゲージ
     private static final float POWER_GAUGE_HEIGHT = 30;
@@ -44,11 +47,8 @@ public class Stage31View extends SurfaceView implements SurfaceHolder.Callback {
     private static final int GROUND_BLOCK_HEIGHT = 100;
 
     private Ground lastGround;
-    private Ground topGround;
 
     private final List<Ground> groundList = new ArrayList<>();
-    private final List<Ground> topGroundList = new ArrayList<>() ;
-
     private final Random rand = new Random(System.currentTimeMillis());
 
     private Bitmap marioBitmap;
@@ -67,32 +67,7 @@ public class Stage31View extends SurfaceView implements SurfaceHolder.Callback {
         public int getDistanceFromGround(Mario mario) {
             int width = getWidth();
             int height = getHeight();
-
-            //上の地面判定
-            for (Ground topGround : topGroundList) {
-
-                //今までいた地面(ブロック)から外れたら
-                if (!topGround.isShown(width, height)) {
-                    continue;
-                }
-
-                //地面(ブロック)から左右ではみ出しているかの判定
-                boolean horizontal = !(mario.hitRect.left >= topGround.rect.right || mario.hitRect.right <= topGround.rect.left);
-                //はみ出していなかったら地面(ブロック)までの距離を返す
-                if (horizontal) {
-
-                    //gameover判定
-                    int topDistanceFromGround = mario.hitRect.top - topGround.rect.bottom;
-
-                    //自機が地面の下に行ったらゲームオーバー
-                    if (topDistanceFromGround <= 0) {
-                        gameOver();
-                        return Integer.MAX_VALUE;
-                    }
-                }
-            }
-
-            //下の地面判定
+            //拡張for文
             for (Ground ground : groundList) {
 
                 //今までいた地面(ブロック)から外れたら
@@ -246,7 +221,7 @@ public class Stage31View extends SurfaceView implements SurfaceHolder.Callback {
      * viewクラス継承
      * @param context
      */
-    public Stage31View(Context context) {
+    public Stage4View(Context context) {
         super(context);
 
         marioBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.mario);
@@ -270,7 +245,6 @@ public class Stage31View extends SurfaceView implements SurfaceHolder.Callback {
         int width = canvas.getWidth();
         int height = canvas.getHeight();
 
-        //スタート直後の地面
         if (lastGround == null) {
             int top = height - GROUND_HEIGHT;
             lastGround = new Ground(0, top, width, height);
@@ -282,23 +256,17 @@ public class Stage31View extends SurfaceView implements SurfaceHolder.Callback {
 
                 //地面が生成されるごとにスコアを足す
                 if (isGameOver.get() != true) {
-                    score += 100;
+                    score += 10;
                 }
 
-                //下の地面の高さをランダムに生成
+                //地面の高さをランダムに生成
                 int groundHeight = rand.nextInt(height / GROUND_BLOCK_HEIGHT) * GROUND_BLOCK_HEIGHT / 2 + GROUND_HEIGHT;
-                //上の地面の高さをランダムに生成
-                int topGroundHeight = rand.nextInt(height / GROUND_BLOCK_HEIGHT) * GROUND_BLOCK_HEIGHT / 4 ;
 
                 int left = lastGround.rect.right;
                 int top = height - groundHeight;
                 int right = left + GROUND_WIDTH;
-
                 lastGround = new Ground(left, top, right, height);
-                topGround = new Ground(left, 0, right, topGroundHeight);
-
                 groundList.add(lastGround);
-                topGroundList.add(topGround);
 
             }
         }
@@ -313,20 +281,6 @@ public class Stage31View extends SurfaceView implements SurfaceHolder.Callback {
                 }
             } else {
                 groundList.remove(ground);
-                i--;
-            }
-        }
-
-        for (int i = 0; i < topGroundList.size(); i++) {
-            Ground ground = topGroundList.get(i);
-
-            if (ground.isAvailable()) {
-                ground.move(GROUND_MOVE_TO_LEFT);
-                if (ground.isShown(width, height)) {
-                    ground.draw(canvas);
-                }
-            } else {
-                topGroundList.remove(ground);
                 i--;
             }
         }
