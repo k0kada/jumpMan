@@ -25,5 +25,13 @@
         android:text="ステージ2"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
-        android:id="@+id/stage2" />
+        android:id="@+id/stage2">
+    </Button>
+
+    <Button
+        android:text="ステージ3"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:id="@+id/stage3">
+    </Button>
 </LinearLayout>

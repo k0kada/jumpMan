@@ -15,6 +15,7 @@ public class MenuActivity extends Activity implements View.OnClickListener {
 
     private Button button1;
     private Button button2;
+    private Button button3;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
@@ -25,10 +26,12 @@ public class MenuActivity extends Activity implements View.OnClickListener {
             // ボタンコントロールのインスタンスを取得
             button1 = (Button)findViewById(R.id.stage1);
             button2 = (Button)findViewById(R.id.stage2);
+            button3 = (Button)findViewById(R.id.stage3);
 
             // ボタンクリックイベントを登録
             button1.setOnClickListener(this);
             button2.setOnClickListener(this);
+            button3.setOnClickListener(this);
 
 
         }
@@ -41,6 +44,9 @@ public class MenuActivity extends Activity implements View.OnClickListener {
                     break;
                 case R.id.stage2:
                     stageId.putString("stageId", "stage2");
+                    break;
+                case R.id.stage3:
+                    stageId.putString("stageId", "stage3");
                     break;
             }
 
