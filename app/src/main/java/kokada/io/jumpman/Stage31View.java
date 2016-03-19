@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Created by kokada on 16/03/17.
  */
-public class Stage3View extends SurfaceView implements SurfaceHolder.Callback {
+public class Stage31View extends SurfaceView implements SurfaceHolder.Callback {
 
     //ジャンプゲージ
     private static final float POWER_GAUGE_HEIGHT = 30;
@@ -246,7 +246,7 @@ public class Stage3View extends SurfaceView implements SurfaceHolder.Callback {
      * viewクラス継承
      * @param context
      */
-    public Stage3View(Context context) {
+    public Stage31View(Context context) {
         super(context);
 
         marioBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.mario);
@@ -282,7 +282,7 @@ public class Stage3View extends SurfaceView implements SurfaceHolder.Callback {
 
                 //地面が生成されるごとにスコアを足す
                 if (isGameOver.get() != true) {
-                    score += 50;
+                    score += 100;
                 }
 
                 //下の地面の高さをランダムに生成
