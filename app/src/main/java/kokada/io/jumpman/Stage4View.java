@@ -1,8 +1,5 @@
 package kokada.io.jumpman;
 
-//アプリケーションの環境情報とかをグローバル(Android OSの全域）で受け渡しするためのインターフェース
-//アクティビティの起動とかブロードキャスト、インテントの受け取りといった他のアプリからの応答を行え、アンドロイド特有のリソース・クラスにアクセスすることも出来る。
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -54,6 +51,11 @@ public class Stage4View extends SurfaceView implements SurfaceHolder.Callback {
     private Bitmap marioBitmap;
     private Mario mario;
 
+    private static final int ENEMY_MOVE_TO_LEFT = 30;
+    private static final int ENEMY_APPEAR_FROM_LEFT = 1800;
+    private Bitmap enemyBitmap;
+    private Enemy enemy;
+
     /**
      * 自機と地面との距離
      */
@@ -77,16 +79,74 @@ public class Stage4View extends SurfaceView implements SurfaceHolder.Callback {
 
                 //地面(ブロック)から左右ではみ出しているかの判定
                 boolean horizontal = !(mario.hitRect.left >= ground.rect.right || mario.hitRect.right <= ground.rect.left);
+                //自機と敵の幅が重なっているかの判定
+                boolean enemyHorizontal = (mario.hitRect.left <= enemy.hitRect.right && enemy.hitRect.left <= mario.hitRect.right) || (enemy.hitRect.left <= mario.hitRect.right && mario.hitRect.left <= enemy.hitRect.right);
+                //敵の再出現判定
+                boolean enemyRespawn = enemy.hitRect.right < 0;
+
+                if (enemyHorizontal) {
+                    //敵にぶつかったら死亡
+                    int distanceFromEnemy = enemy.hitRect.top - mario.hitRect.bottom;
+                    if (distanceFromEnemy < 0) {
+                        gameOver();
+                    }
+                }
+
+                //敵が画面左を過ぎたらリスポーンする
+                if (enemyRespawn) {
+                    enemy = new Enemy(enemyBitmap, ENEMY_APPEAR_FROM_LEFT, 0, enemyCallback);
+                }
+
                 //はみ出していなかったら地面(ブロック)までの距離を返す
                 if (horizontal) {
 
                     //gameover判定
                     int distanceFromGround = ground.rect.top - mario.hitRect.bottom;
+
+
                     //自機が地面の下に行ったらゲームオーバー
                     if (distanceFromGround < 0) {
                         gameOver();
                         return Integer.MAX_VALUE;
                     }
+
+                    return distanceFromGround;
+                }
+
+            }
+
+            return Integer.MAX_VALUE;
+        }
+    };
+
+    /**
+     * 敵と地面の距離
+     */
+    private final Enemy.Callback enemyCallback = new Enemy.Callback() {
+        /**
+         *
+         * @param enemy
+         * @return
+         */
+        @Override
+        public int getDistanceFromGround(Enemy enemy) {
+            int width = getWidth();
+            int height = getHeight();
+            //拡張for文
+            for (Ground ground : groundList) {
+
+                //今までいた地面(ブロック)から外れたら
+                if (!ground.isShown(width, height)) {
+                    continue;
+                }
+
+                //地面(ブロック)から左右ではみ出しているかの判定
+                boolean horizontal = !(enemy.hitRect.left >= ground.rect.right || enemy.hitRect.right <= ground.rect.left);
+                //はみ出していなかったら地面(ブロック)までの距離を返す
+                if (horizontal) {
+
+                    //敵と地面の距離
+                    int distanceFromGround = ground.rect.top - enemy.hitRect.bottom;
 
                     return distanceFromGround;
                 }
@@ -207,8 +267,6 @@ public class Stage4View extends SurfaceView implements SurfaceHolder.Callback {
         //自機の加速度を0にする
         mario.stop();
 
-
-
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -226,6 +284,9 @@ public class Stage4View extends SurfaceView implements SurfaceHolder.Callback {
 
         marioBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.mario);
         mario = new Mario(marioBitmap, 0, 0, marioCallback);
+
+        enemyBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.enemy);
+        enemy = new Enemy(enemyBitmap, ENEMY_APPEAR_FROM_LEFT, 0, enemyCallback);
 
         //スコア設定
         paintScore.setColor(Color.BLACK);
@@ -256,7 +317,7 @@ public class Stage4View extends SurfaceView implements SurfaceHolder.Callback {
 
                 //地面が生成されるごとにスコアを足す
                 if (isGameOver.get() != true) {
-                    score += 10;
+                    score += 150;
                 }
 
                 //地面の高さをランダムに生成
@@ -288,6 +349,10 @@ public class Stage4View extends SurfaceView implements SurfaceHolder.Callback {
         //マリオ表示
         mario.move();
         mario.draw(canvas);
+
+        //敵表示
+        enemy.move(ENEMY_MOVE_TO_LEFT);
+        enemy.draw(canvas);
 
         //タッチ時間に応じてパワーゲージを表示
         if (touchDownStartTime > 0) {

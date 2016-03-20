@@ -1,47 +1,19 @@
 package kokada.io.jumpman;
 
-//アプリケーションの環境情報とかをグローバル(Android OSの全域）で受け渡しするためのインターフェース
-//アクティビティの起動とかブロードキャスト、インテントの受け取りといった他のアプリからの応答を行え、アンドロイド特有のリソース・クラスにアクセスすることも出来る。
 import android.content.Context;
-//Bitmapクラスはイメージに関するクラスです。外部から画像を読み込んだり、新しく作成したりします。
 import android.graphics.Bitmap;
-//BitmapFactoryクラスは外部ファイルやリソース、ストリームなどからBitmapクラスのオブジェクトを作成するためのクラスです。
 import android.graphics.BitmapFactory;
-//Canvasクラスは、文字、図形等を描画することができます。
 import android.graphics.Canvas;
-//MotionEventは、デバイスの種類に応じて、絶対的または、相対的な移動や その他のデータのいづれかを保持することができます。
 import android.graphics.Color;
-/*
-Paintオブジェクトは、描画する場合に使用されるペンのようなものです。
-ペンのように描画する文字や図形の色や線の太さ等を指定することができます。
- */
 import android.graphics.Paint;
-/**
- * スレッド間通信のための仕組み。(Handlerインスタンスを生成したスレッドへイベントを送るための仕組み)
- */
 import android.os.Handler;
 import android.view.MotionEvent;
-/*
-Surfaceのピクセルを実際にいじったり、Surfaceの変化を監視する人のためのインターフェイス。
-SurfaceViewにはgetHolder()メソッドが用意されていて、そのSurfaceViewのホルダーのインスタンスを取得できる。
- */
 import android.view.SurfaceHolder;
-/*
-SurfaceViewは、viewクラスを継承したクラスです。
-Viewクラスよりも高速に描画ができ、ゲームプログラムに適しています。
-SurfaceViewは、UIスレッドから独立して処理を行うビューです。
-リアルタイムで処理を行うためには、UIスレッドから、独立したスレッドを起動を行う必要があります。
-SurfaceViewは、アプリケーションのスレッドと行が処理のスレッドが独立している為、定期的な処理に向いています。
- */
 import android.view.SurfaceView;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-/*
-原子的な更新が可能な boolean 値です。原子変数のプロパティーの詳細は、java.util.concurrent.atomic パッケージ仕様を参照してください。
-AtomicBoolean は、原子更新フラグなどのアプリケーションで使用されます。 Boolean の代替として使用することはできません。
- */
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
