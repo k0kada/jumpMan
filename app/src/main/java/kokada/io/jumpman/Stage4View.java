@@ -56,6 +56,8 @@ public class Stage4View extends SurfaceView implements SurfaceHolder.Callback {
     private Bitmap enemyBitmap;
     private Enemy enemy;
 
+    private boolean  destroyedFlag = false;
+
     /**
      * 自機と地面との距離
      */
@@ -178,19 +180,23 @@ public class Stage4View extends SurfaceView implements SurfaceHolder.Callback {
                 if (holder.isCreating()) {
                     continue;
                 }
-                Canvas canvas = holder.lockCanvas();
-                if (canvas == null) {
-                    continue;
-                }
-                drawGame(canvas);
 
-                holder.unlockCanvasAndPost(canvas);
+                if (!destroyedFlag) {
 
-                synchronized (this) {
-                    try {
-                        //描写間隔
-                        wait(DRAW_INTERVAL);
-                    } catch (InterruptedException e) {
+                    Canvas canvas = holder.lockCanvas();
+                    if (canvas == null) {
+                        continue;
+                    }
+                    drawGame(canvas);
+
+                    holder.unlockCanvasAndPost(canvas);
+
+                    synchronized (this) {
+                        try {
+                            //描写間隔
+                            wait(DRAW_INTERVAL);
+                        } catch (InterruptedException e) {
+                        }
                     }
                 }
             }
@@ -226,17 +232,19 @@ public class Stage4View extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-
+        destroyedFlag = false;
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         startDrawThread();
+        destroyedFlag = false;
     }
 
     @Override
-    public void surfaceDestroyed(SurfaceHolder holderstart) {
-        startDrawThread();
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        stopDrawThread();
+        destroyedFlag = true;
     }
 
     //SurfaceViewの描画スレッド内からUIを変更するために使用するHandlerを追加

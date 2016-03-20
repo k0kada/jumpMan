@@ -21,7 +21,7 @@ public class Mario {
     private static final int HIT_MARGIN_LEFT = 30;
     private static final int HIT_MARGIN_RIGHT = 10;
 
-    private static final float GRAVITY = 0.8f;
+    private static final float GRAVITY = 1.0f;
     private static final float WEIGHT = GRAVITY * 60;
 
     private final Paint paint = new Paint();
