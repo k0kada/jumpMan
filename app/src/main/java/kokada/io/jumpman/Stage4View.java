@@ -52,6 +52,7 @@ public class Stage4View extends SurfaceView implements SurfaceHolder.Callback {
     private Mario mario;
 
     private static final int ENEMY_MOVE_TO_LEFT = 15;
+    private static final int ENEMY_APPEAR_FROM_LEFT = 1800;
     private Bitmap enemyBitmap;
     private Enemy enemy;
 
@@ -93,7 +94,7 @@ public class Stage4View extends SurfaceView implements SurfaceHolder.Callback {
 
                 //敵が画面左を過ぎたらリスポーンする
                 if (enemyRespawn) {
-                    enemy = new Enemy(enemyBitmap, getWidth(), 0, enemyCallback);
+                    enemy = new Enemy(enemyBitmap, ENEMY_APPEAR_FROM_LEFT, 0, enemyCallback);
                 }
 
                 //はみ出していなかったら地面(ブロック)までの距離を返す
@@ -285,7 +286,7 @@ public class Stage4View extends SurfaceView implements SurfaceHolder.Callback {
         mario = new Mario(marioBitmap, 0, 0, marioCallback);
 
         enemyBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.enemy);
-        enemy = new Enemy(enemyBitmap, getWidth(), 0, enemyCallback);
+        enemy = new Enemy(enemyBitmap, ENEMY_APPEAR_FROM_LEFT, 0, enemyCallback);
 
         //スコア設定
         paintScore.setColor(Color.BLACK);
