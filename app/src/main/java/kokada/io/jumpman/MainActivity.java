@@ -24,6 +24,8 @@ public class MainActivity extends AppCompatActivity
         AlertDialog.Builder alertDlg = new AlertDialog.Builder(this);
         alertDlg.setTitle("Game Over");
         alertDlg.setMessage("やり直しますか？");
+        alertDlg.setCancelable(false);
+
         alertDlg.setPositiveButton("やり直す", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {

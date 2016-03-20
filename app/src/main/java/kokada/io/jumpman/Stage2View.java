@@ -209,8 +209,6 @@ public class Stage2View extends SurfaceView implements SurfaceHolder.Callback {
         //自機の加速度を0にする
         mario.stop();
 
-
-
         handler.post(new Runnable() {
             @Override
             public void run() {

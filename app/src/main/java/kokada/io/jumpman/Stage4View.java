@@ -105,7 +105,7 @@ public class Stage4View extends SurfaceView implements SurfaceHolder.Callback {
 
 
                     //自機が地面の下に行ったらゲームオーバー
-                    if (distanceFromGround < 0) {
+                    if (distanceFromGround < 0 || isGameOver.get()) {
                         gameOver();
                         return Integer.MAX_VALUE;
                     }

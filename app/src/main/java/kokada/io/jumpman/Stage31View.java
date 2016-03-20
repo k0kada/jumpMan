@@ -108,7 +108,7 @@ public class Stage31View extends SurfaceView implements SurfaceHolder.Callback {
                     //gameover判定
                     int distanceFromGround = ground.rect.top - mario.hitRect.bottom;
                     //自機が地面の下に行ったらゲームオーバー
-                    if (distanceFromGround < 0) {
+                    if (distanceFromGround < 0 || isGameOver.get()) {
                         gameOver();
                         return Integer.MAX_VALUE;
                     }
@@ -231,8 +231,6 @@ public class Stage31View extends SurfaceView implements SurfaceHolder.Callback {
         isGameOver.set(true);
         //自機の加速度を0にする
         mario.stop();
-
-
 
         handler.post(new Runnable() {
             @Override
